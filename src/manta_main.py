@@ -94,11 +94,11 @@ vrep.simxSetJointForce(clientID, br_brake_handle, brake_force, vrep.simx_opmode_
 while True:
 	time.sleep(0.5)
 	#read sensors
-	_, steer_pos=vrep.simxGetJointPosition(clientID,steer_handle,vrep.simx_opmode_oneshot_wait);
+	_, steer_pos=vrep.simxGetJointPosition(clientID,steer_handle,vrep.simx_opmode_streaming);
 	#current angular velocity of back left wheel
-	_, bl_wheel_velocity=vrep.simxGetObjectFloatParameter(clientID, bl_brake_handle,2012,vrep.simx_opmode_oneshot_wait)
+	_, bl_wheel_velocity=vrep.simxGetObjectFloatParameter(clientID, bl_brake_handle,2012,vrep.simx_opmode_streaming)
 	#current angular velocity of back right wheel
-	_, br_wheel_velocity=vrep.simxGetObjectFloatParameter(clientID, br_brake_handle,2012,vrep.simx_opmode_oneshot_wait)
+	_, br_wheel_velocity=vrep.simxGetObjectFloatParameter(clientID, br_brake_handle,2012,vrep.simx_opmode_streaming)
 	#average angular velocity of the back wheels
 	rear_wheel_velocity=(bl_wheel_velocity+br_wheel_velocity)/2
 	#linear velocity
