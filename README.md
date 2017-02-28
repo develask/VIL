@@ -1,1 +1,1 @@
-# VIL
+# VIL = Vehicle Intelligent Learning
