@@ -1,24 +1,39 @@
-import vrep
+#import vrep
 import time
+import sys
 import numpy as np
 
 
-vrep.simxFinish(-1) #Terminar todas las conexiones
-clientID=vrep.simxStart('127.0.0.1',19999,True,True,5000,5)
+def firstConnection():
+	vrep.simxFinish(-1) #Terminar todas las conexiones
+	clientID=vrep.simxStart('127.0.0.1',19999,True,True,5000,5)
+	if clientID!=-1:
+		print ('Conexion establecida')
+		return clientID
+	else:
+		sys.exit("Error: no se puede conectar")
 
-if clientID!=-1:
-    print ('Conexion establecida')
- 
-else:
-    sys.exit("Error: no se puede conectar")
+#clientID = firstConnection()
 
 
+class Objeto():
+	def __init__(self, clientID):
+		self.clientID = clientID
+		self.component = {}
 
+	def getComponent(nombre):
+		if nombre in self.component:
+			return self.component[nombre]
+		else:
+			return None
+	def setComponent(nombre, id_component = None):
+		if id_actuador == None:
+			id_actuador = nombre
+		_, self.component[nombre] = vrep.simxGetObjectHandle(self.clientID, id_component, vrep.simx_opmode_oneshot_wait)
+	
 #ACTUADORES
 
-#importar
-
-# direccion, ángulo de giro
+# direccion, angulo de giro
 _, steer_handle = vrep.simxGetObjectHandle(clientID, 'steer_joint', vrep.simx_opmode_oneshot_wait)
 # motor: se puede fijar tanto el par como la velocidad-> mismo actuador, dos actuaciones...
 _, motor_handle = vrep.simxGetObjectHandle(clientID, 'motor_joint', vrep.simx_opmode_oneshot_wait)
@@ -62,7 +77,7 @@ rear_wheel_velocity=(bl_wheel_velocity+br_wheel_velocity)/2
 linear_velocity=rear_wheel_velocity*0.09 # el radio es 0.09
 
 
-# sensor de visión
+# sensor de vision
 _, camhandle = vrep.simxGetObjectHandle(clientID, 'Vision_sensor', vrep.simx_opmode_oneshot_wait)
 _, resolution, image = vrep.simxGetVisionSensorImage(clientID, camhandle, 0, vrep.simx_opmode_oneshot_wait)
 img = np.array(image, dtype = np.uint8)
@@ -77,7 +92,7 @@ _, state, point, handle, vector = vrep.simxReadProximitySensor(clientID, proximi
 
 
 
-# LÓGICA
+# LOGICA
 
 print(linear_velocity)
 
@@ -109,7 +124,7 @@ while True:
 	print("state", state)
 	print("point", point)
 	print("vector", vector)
-	if state==True and abs(vector[2])>0.4: # hay algo, más o menos delante, y más o menos perpendicular
+	if state==True and abs(vector[2])>0.4: # hay algo, mas o menos delante, y mas o menos perpendicular
 		if point[0] < 0: # hay algo a la izauierda
 
 			steer_angle += 0.04 # gira a la derecha
