@@ -6,7 +6,7 @@ import signal
 from class_Manta import Manta
 
 time_step = 0.5
-sim_time = 3
+sim_time = 30
 steps = int(sim_time/time_step)
 
 nb_sims = 5 # number of simulations were data is recolected before retraining the DNN
@@ -17,9 +17,8 @@ nb_dnn_retrains = 10 # number of set of simulations, i.e. number of time the DNN
 
 
 def signal_handler(signal, frame):
-	print('You pressed ctrl C. Stopping the simulation...')
+	print('you pressed ctrl c')
 	return_code = vrep.simxStopSimulation(clientID,vrep.simx_opmode_oneshot)
-	time.sleep(1)
 	vrep.simxFinish(clientID)
 	sys.exit(0)
 signal.signal(signal.SIGINT, signal_handler)
@@ -78,9 +77,7 @@ for retrain in range(nb_dnn_retrains): # until convergence in reward, o otro cri
 
 
 	## retrain_DNN(training_labels)
-	print("ahora deberia de estar paradao")
-	time.sleep(5)
-	print("Ya no")
+
 
 
 
