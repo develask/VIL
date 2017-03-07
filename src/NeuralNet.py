@@ -54,7 +54,7 @@ class DNN():
 		sensors_net = Sequential()
 		sensors_net.add(Dense(other_parameters, input_shape=(other_parameters,)))
 		sensors_net.add(Dense(image_net.output_shape[1]))
-		self.model.add(Activation('relu'))
+		sensors_net.add(Activation('relu'))
 		print("Output shape Total:", sensors_net.output_shape)
 
 		self.model = Sequential()
@@ -77,13 +77,13 @@ class DNN():
 		              optimizer=sgd,
 		              metrics=['accuracy'])
 
-	def entrenar(numpy_array):
+	def entrenar(self,numpy_array):
 		x = numpy_array[0,]
 		y = numpy_array[1,]
 		self.model.fit(X_train, Y_train, batch_size=self.batch_size, nb_epoch=self.nb_epoch, verbose=1)
 
-	def evaluar(numpy_array):
-		return self.model.predict(np.asarray([numpy_array]))[0]
+	def evaluar(self,numpy_array):
+		return self.model.predict([np.asarray([numpy_array[0]]), np.asarray([numpy_array[1]])])[0]
 
 
 

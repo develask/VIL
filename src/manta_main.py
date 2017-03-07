@@ -35,10 +35,34 @@ def firstConnection():
 	else:
 		sys.exit("Error: no se puede conectar")
 
+def reward_simple(history):
+	luzera = len(history)
+	v = 0
+	for i in range(luzera):
+		v += history[i][1][1]
+	return v/luzera
 
-clientID=vrep.simxStart('127.0.0.1',19999,True,True,5000,5)
+
+def choose_action(dnn_out):
+	# dnn_out es un np.array, que represneta dos distribuciones de probabilidad
+	p_turn = dnn_out[0:7] # coger las probabilidades que tienen que ver con la direccion
+	p_accel = dnn_out[7:14] # coger las probabilidades que tienen que ver con la accel/break
+
+	turn_ind = np.random.choice(7,1,p=p_turn/np.sum(p_turn))
+	accel_ind = np.random.choice(7,1,p=p_accel/np.sum(p_accel))
+
+	turn_act = [0]*7
+	accel_act = [0]*7
+
+	turn_act[turn_ind] = 1
+	accel_act[accel_ind] = 1
+
+	return turn_act, accel_act
 
 dnn = DNN()
+clientID=vrep.simxStart('127.0.0.1',19999,True,True,5000,5)
+
+
 
 for retrain in range(nb_dnn_retrains): # until convergence in reward, o otro criterio de parada
 	
@@ -57,13 +81,15 @@ for retrain in range(nb_dnn_retrains): # until convergence in reward, o otro cri
 		for step in range(steps):
 
 			sensors = manta.getSensors()
+			print(type(sensors))
 			
 			dnn_out = dnn.evaluar(sensors) # get probability of each action
 
 			action = choose_action(dnn_out) # randomly choose with the previously gotten probabilities
+			print(action)
 
 			history_sensors.append(sensors)
-			history_actions.append(actions)
+			history_actions.append(action)
 
 			manta.act(*action)
 
@@ -88,53 +114,31 @@ for retrain in range(nb_dnn_retrains): # until convergence in reward, o otro cri
 	time.sleep(5)
 	print("Ya no")
 
-def reward_simple(history):
-	luzera = len(history)
-	v = 0
-	for i in range(luzera):
-		v += history[i][1][1]
-	return v/luzera
-
-
-def choose_action(dnn_out):
-	# dnn_out es un np.array, que represneta dos distribuciones de probabilidad
-	p_turn = dnn_out[0:7] # coger las probabilidades que tienen que ver con la direccion
-	p_accel = dnn_out[7:14] # coger las probabilidades que tienen que ver con la accel/break
-
-	turn_ind = np.random.choice[7,1,p=p_turn/np.sum(p_turn)]
-	accel_ind = np.random.choice[7,1,p=p_accel/np.sum(p_accel)]
-
-	turn_act = [0]*7
-	accel_act = [0]*7
-
-	turn_act[turn_ind] = 1
-	accel_act[accel_ind] = 1
-
-	return turn_act, accel_act
-
-
-def getLabels(history,reward,a,b,c,d):
-	labels = [] [sensors,]
 
 
 
-	return labels
+# def getLabels(history,reward,a,b,c,d):
+# 	labels = [] [sensors,]
+
+
+
+# 	return labels
 
 
 
 
 
 
-def reward_curvatura(history):
-	luzera = len(history)
-	v = 0
-	for i in range(luzera):
-		v += history[i][0]["velocity"]
+# def reward_curvatura(history):
+# 	luzera = len(history)
+# 	v = 0
+# 	for i in range(luzera):
+# 		v += history[i][0]["velocity"]
 	
 
-	## computar parte de la curvatura
+# 	## computar parte de la curvatura
 
-	return(f(v/luzera, zailtasuna))
+# 	return(f(v/luzera, zailtasuna))
 
 
 

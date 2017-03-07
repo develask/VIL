@@ -107,14 +107,14 @@ class Manta():
 		# 	"camera": img/255
 		# }
 
-		return [img/255,np.asarray(
+		return([img/255,np.asarray([
 						self.norm(self.steer_pos, -self.max_steer_angle, self.max_steer_angle), velocity,
 						1 if state_vl else 0, point_vl[2]/5 if state_vl else 1, normal_vl[0], normal_vl[1], normal_vl[2],
 						1 if state_l else 0, point_l[2]/5 if state_l else 1, normal_l[0], normal_l[1], normal_l[2],
 						1 if state_f else 0, point_f[2]/5 if state_f else 1, normal_f[0], normal_f[1], normal_f[2],
 						1 if state_r else 0, point_r[2]/5 if state_r else 1, normal_r[0], normal_r[1], normal_r[2],
 						1 if state_vr else 0, point_vr[2]/5 if state_vr else 1, normal_vr[0], normal_vr[1], normal_vr[2]
-						)]
+						] )])
 
 	def act(self, turn_discr, accel_discr): # entradas discretas, que hay que pasar a salidas continuas y no normalizadas
 
