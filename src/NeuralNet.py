@@ -83,10 +83,10 @@ class DNN():
 		              optimizer=sgd,
 		              metrics=['accuracy'])
 
-	def entrenar(self,numpy_array):
-		x = numpy_array[0,]
-		y = numpy_array[1,]
-		self.model.fit(X_train, Y_train, batch_size=self.batch_size, nb_epoch=self.nb_epoch, verbose=1)
+	def entrenar(self,x_and_y):
+		x = x_and_y[0]
+		y = x_and_y[1]
+		self.model.fit([np.asarray([x[0]]), np.asarray([x[1]])], np.asarray(y), batch_size=self.batch_size, nb_epoch=self.nb_epoch, verbose=1)
 
 	def evaluar(self,numpy_array):
 		return self.model.predict([np.asarray([numpy_array[0]]), np.asarray([numpy_array[1]])])[0]
