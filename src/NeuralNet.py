@@ -17,9 +17,9 @@ import os
 
 class DNN():
 	def __init__(self, img_dim = (128, 64, 3), other_parameters = 27, nb_classes = 14, model = None):
-		self.batch_size = 128
+		self.batch_size = 8
 		self.nb_classes = nb_classes
-		self.nb_epoch = 12
+		self.nb_epoch = 5
 
 		# size of pooling area for max pooling
 		self.pool_size = (2, 2)
@@ -86,7 +86,12 @@ class DNN():
 	def entrenar(self,x_and_y):
 		x = x_and_y[0]
 		y = x_and_y[1]
-		self.model.fit([np.asarray([x[0]]), np.asarray([x[1]])], np.asarray(y), batch_size=self.batch_size, nb_epoch=self.nb_epoch, verbose=1)
+		x1 = []
+		x2 = []
+		for ej in x:
+			x1.append(ej[0])
+			x2.append(ej[1])
+		self.model.fit([np.asarray(x1), np.asarray(x2)], np.asarray(y), batch_size=self.batch_size, nb_epoch=self.nb_epoch, verbose=0)
 
 	def evaluar(self,numpy_array):
 		return self.model.predict([np.asarray([numpy_array[0]]), np.asarray([numpy_array[1]])])[0]

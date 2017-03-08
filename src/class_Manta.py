@@ -1,12 +1,14 @@
 import vrep
 import numpy as np
+import random
+import time
 
 class Manta():
 	def __init__(self, clientID):
 		self.clientID = clientID
 
 		# inicializar todos los handlers
-
+		_, self.manta_handle = vrep.simxGetObjectHandle(self.clientID, 'Manta', vrep.simx_opmode_oneshot_wait)
 		_, self.steer_handle = vrep.simxGetObjectHandle(self.clientID, 'steer_joint', vrep.simx_opmode_oneshot_wait)
 		# motor: se puede fijar tanto el par como la velocidad-> mismo actuador, dos actuaciones...
 		_, self.motor_handle = vrep.simxGetObjectHandle(self.clientID, 'motor_joint', vrep.simx_opmode_oneshot_wait)
@@ -50,6 +52,24 @@ class Manta():
 		_, self.proximityhandle_f = vrep.simxGetObjectHandle(self.clientID, 'Proximity_sensor_front', vrep.simx_opmode_oneshot_wait)
 		_, self.proximityhandle_r = vrep.simxGetObjectHandle(self.clientID, 'Proximity_sensor_right', vrep.simx_opmode_oneshot_wait)
 		_, self.proximityhandle_vr = vrep.simxGetObjectHandle(self.clientID, 'Proximity_sensor_very_right', vrep.simx_opmode_oneshot_wait)
+
+		self.setRandomPosition()
+
+	def setRandomPosition(self):
+		posibles_coord = [((-2.4,-5.57,0.3),(0,0,0)), # x,y,z,alpha,betta,gamma
+						  ((0.93,-4.2,0.3),(0,0,0)),
+						  ((1.2,4.9,0.3),(0,0,-165)),
+						  ((-1.9,-5.4,0.3),(0,0,179))] 
+		
+		coord = posibles_coord[random.randint(0,len(posibles_coord)-1)]
+		
+
+		vrep.simxSetObjectPosition(self.clientID,self.manta_handle,-1,coord[0],vrep.simx_opmode_oneshot)
+
+		vrep.simxSetObjectOrientation(self.clientID,self.manta_handle,-1,coord[1],vrep.simx_opmode_oneshot)
+		time.sleep(1)
+
+
 
 
 	def getSensors(self):
@@ -139,10 +159,10 @@ class Manta():
 		accel_dict = { # (brake_force,motor_torque,motor_velocity)
 			"[1, 0, 0, 0, 0, 0, 0]": 	(1,		0,		0),   	#"hard_break"
 			"[0, 1, 0, 0, 0, 0, 0]": 	(0.5,	0,		0),   	#"medium_break"
-			"[0, 0, 1, 0, 0, 0, 0]": 	(0.25,	0,		0),   	#"slight_break"
-			"[0, 0, 0, 1, 0, 0, 0]": 	(0,		0,		0),   	#"inertia"
-			"[0, 0, 0, 0, 1, 0, 0]": 	(0,		1,		0.25),  #"slight_accel"
-			"[0, 0, 0, 0, 0, 1, 0]": 	(0,		1,		0.5),   #"medium_accel"
+			"[0, 0, 1, 0, 0, 0, 0]": 	(0	,	0,		0),   	#inertia
+			"[0, 0, 0, 1, 0, 0, 0]": 	(0,		1,		0.25),   	#slight_accel
+			"[0, 0, 0, 0, 1, 0, 0]": 	(0,		1,		0.5),  #medium_accel
+			"[0, 0, 0, 0, 0, 1, 0]": 	(0,		1,		0.75),   #high_accel
 			"[0, 0, 0, 0, 0, 0, 1]": 	(0,		1,		1)   	#"full_gas"
 		}
 
