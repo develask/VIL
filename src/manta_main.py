@@ -8,13 +8,13 @@ import math
 from class_Manta import Manta
 from NeuralNet import DNN
 
-time_step = 0.2
+time_step = 0.4
 sim_time = 20
 steps = int(sim_time/time_step)
 
 nb_sims = 5 # number of simulations were data is recolected before retraining the DNN
 
-nb_dnn_retrains = 10 # number of set of simulations, i.e. number of time the DNN is going to be retrained
+nb_dnn_retrains = 500 # number of set of simulations, i.e. number of time the DNN is going to be retrained
 
 
 dnn = DNN()
@@ -45,6 +45,19 @@ def reward_simple(history):
 		v += history[i][1][1]
 	return v/luzera if luzera > 0 else 0
 
+def ruido(entrada, num, rango = 0.05):
+	imagen = entrada[0]
+	sensores = entrada[1]
+	lista = [(imagen, sensores)]
+	for i in range(num-1):
+		a = np.random.rand(imagen.shape)
+		im = np.copy(imagen)+(a*rango)-(rango/2)
+		a = np.random.rand(sensores.shape)
+		se = np.copy(sensores)+(a*rango)-(rango/2)
+		lista.append((im,se))
+	return lista
+
+
 # def reward_penalizar_choque(history,crashed):
 # 	luzera = len(history)
 # 	v = 0
@@ -62,6 +75,12 @@ def choose_action(dnn_out):
 	p_turn = dnn_out[0:7] # coger las probabilidades que tienen que ver con la direccion
 	p_accel = dnn_out[7:14] # coger las probabilidades que tienen que ver con la accel/break
 
+	for i in range(len(p_turn)):
+		p_turn[i] = math.e**p_turn[i]
+	for i in range(len(p_accel)):
+		p_accel[i] = math.e**p_accel[i]
+
+
 	turn_ind = np.random.choice(7,1,p=p_turn/np.sum(p_turn))
 	accel_ind = np.random.choice(7,1,p=p_accel/np.sum(p_accel))
 
@@ -74,12 +93,11 @@ def choose_action(dnn_out):
 	return turn_act, accel_act
 
 
-def new_label(reward, accion, a=0.5, b=1.5, c=2.5, d=3.5):
+def new_label(reward, accion, a=0.3, b=0.5, c=0.8, d=1.2):
 
 	sigma_0 = 0.1
 	sigma_a = 0.3
 	sigma_b = 10
-
 
 	idxPos = -1
 	for index in range(0, 7):
@@ -124,8 +142,8 @@ def new_label(reward, accion, a=0.5, b=1.5, c=2.5, d=3.5):
 	for i in range(0, 7):
 			v_probs[i] = v_probs[i]/suma
 
-	print(reward)
-	print(sigma)
+	# print(reward)
+	# print(sigma)
 	return v_probs
 
 
@@ -135,11 +153,13 @@ def getLabels(history_sensors, history_actions, reward):
 	for action in history_actions:
 		act1 = action[:7]
 		act2 = action[7:]
-		new_act1 = new_label(act1, reward)
-		new_act2 = new_label(act2, reward)
+		new_act1 = new_label(reward, act1)
+		new_act2 = new_label(reward, act2)
 		new_history_actions.append(new_act1+new_act2)
 
 	return history_sensors, new_history_actions
+
+
 
 
 
@@ -170,8 +190,9 @@ for retrain in range(nb_dnn_retrains): # until convergence in reward, o otro cri
 			try:
 				sensors = manta.getSensors()
 				
-
+				print("SENSORS:",sensors[1])
 				dnn_out = dnn.evaluar(sensors) # get probability of each action
+				print("DNN_OUT",dnn_out)
 
 				action = choose_action(dnn_out) # randomly choose with the previously gotten probabilities
 				
@@ -199,7 +220,7 @@ for retrain in range(nb_dnn_retrains): # until convergence in reward, o otro cri
 		if crashed == False:
 			reward = reward_simple(history_sensors)
 			print("REWARD (not crashed)", reward)
-			if reward > 0.4:
+			if reward > 0: #siempre
 				new_training_labels = getLabels(history_sensors, history_actions, reward)
 				x_training_labels += new_training_labels[0]
 				y_training_labels += new_training_labels[1]
@@ -208,7 +229,7 @@ for retrain in range(nb_dnn_retrains): # until convergence in reward, o otro cri
 
 			reward = reward_simple(history_sensors[:-int(2/time_step)])
 			print("REWARD (not crashed part)", reward)
-			if reward > 0.4:
+			if reward > 0: #siempre
 				new_training_labels = getLabels(history_sensors[:-int(2/time_step)], history_actions[:-int(2/time_step)], reward)
 				x_training_labels += new_training_labels[0]
 				y_training_labels += new_training_labels[1]
@@ -219,6 +240,7 @@ for retrain in range(nb_dnn_retrains): # until convergence in reward, o otro cri
 				new_training_labels = getLabels(history_sensors[-int(2/time_step):], history_actions[-int(2/time_step):], reward)
 				x_training_labels += new_training_labels[0]
 				y_training_labels += new_training_labels[1]
+
 
 
 

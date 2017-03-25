@@ -33,10 +33,10 @@ class Manta():
 		# img.resize([resolution[0], resolution[1], 3]) # 2 dimensiones, RGB, 256 x 128
 
 
-		self.max_steer_angle = 0.5235987
+		self.max_steer_angle = 0.4 #0.5235987
 		
 		self.min_brake = 0
-		self.max_brake = 100
+		self.max_brake = 40
 
 		self.max_torque = 60
 		self.min_torque =0
@@ -61,6 +61,10 @@ class Manta():
 						  ((1.2,4.9,0.3),(0,0,-165)),
 						  ((-1.9,-5.4,0.3),(0,0,179))] 
 		
+		# hacer que empiece fuera del circuito
+		#posibles_coord = [((-15,-20,0.3),(0,0,0))]
+
+
 		coord = posibles_coord[random.randint(0,len(posibles_coord)-1)]
 		
 
@@ -127,6 +131,9 @@ class Manta():
 		# 	"camera": img/255
 		# }
 
+		print("normal front")
+
+
 		return([img/255,np.asarray([
 						self.norm(self.steer_pos, -self.max_steer_angle, self.max_steer_angle), velocity,
 						1 if state_vl else 0, point_vl[2]/5 if state_vl else 1, normal_vl[0], normal_vl[1], normal_vl[2],
@@ -156,13 +163,23 @@ class Manta():
 		vrep.simxSetJointTargetPosition(self.clientID, self.steer_handle, steer_denorm, vrep.simx_opmode_streaming)
 
 
+		# accel_dict = { # (brake_force,motor_torque,motor_velocity)
+		# 	"[1, 0, 0, 0, 0, 0, 0]": 	(1,		0,		0),   	#"hard_break"
+		# 	"[0, 1, 0, 0, 0, 0, 0]": 	(0.5,	0,		0),   	#"medium_break"
+		# 	"[0, 0, 1, 0, 0, 0, 0]": 	(0	,	0,		0),   	#inertia
+		# 	"[0, 0, 0, 1, 0, 0, 0]": 	(0,		1,		0.25),   	#slight_accel
+		# 	"[0, 0, 0, 0, 1, 0, 0]": 	(0,		1,		0.5),  #medium_accel
+		# 	"[0, 0, 0, 0, 0, 1, 0]": 	(0,		1,		0.75),   #high_accel
+		# 	"[0, 0, 0, 0, 0, 0, 1]": 	(0,		1,		1)   	#"full_gas"
+		# }
+
 		accel_dict = { # (brake_force,motor_torque,motor_velocity)
-			"[1, 0, 0, 0, 0, 0, 0]": 	(1,		0,		0),   	#"hard_break"
-			"[0, 1, 0, 0, 0, 0, 0]": 	(0.5,	0,		0),   	#"medium_break"
-			"[0, 0, 1, 0, 0, 0, 0]": 	(0	,	0,		0),   	#inertia
-			"[0, 0, 0, 1, 0, 0, 0]": 	(0,		1,		0.25),   	#slight_accel
-			"[0, 0, 0, 0, 1, 0, 0]": 	(0,		1,		0.5),  #medium_accel
-			"[0, 0, 0, 0, 0, 1, 0]": 	(0,		1,		0.75),   #high_accel
+			"[1, 0, 0, 0, 0, 0, 0]": 	(0,		1,		0),   	#"hard_break"
+			"[0, 1, 0, 0, 0, 0, 0]": 	(0,		1,		0.17),   	#"medium_break"
+			"[0, 0, 1, 0, 0, 0, 0]": 	(0,		1,		0.33),   	#inertia
+			"[0, 0, 0, 1, 0, 0, 0]": 	(0,		1,		0.5),   	#slight_accel
+			"[0, 0, 0, 0, 1, 0, 0]": 	(0,		1,		0.67),  #medium_accel
+			"[0, 0, 0, 0, 0, 1, 0]": 	(0,		1,		0.83),   #high_accel
 			"[0, 0, 0, 0, 0, 0, 1]": 	(0,		1,		1)   	#"full_gas"
 		}
 
