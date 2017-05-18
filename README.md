@@ -2,7 +2,7 @@
 
 Mediante este trabajo se ha logrado mediante simulación que un vehículo sea capaz de trazar el recorrido de un circuito.
 
-![V-Rep program](/img/Screenshot from 2017-03-03 17-27-12.png)
+![V-Rep program](imgs/v-rep.png)
 
 Como podemos ver, para conseguir hacer las simulación hemos usado el simulador de robótica de V-Rep.
 
@@ -14,18 +14,19 @@ V-REP se usa para el desarrollo rápido de algoritmos, simulación de automatiza
 
 El problema en cuestión consiste en tratar un vehículo como si de un coche de carreras autodirigido se tratara. La idea inicial consistía en crear más de un circuito, entrenar el vehículo en alguno de ellos y ver cómo se comportaba al cambiar de circuito. Para crear el recorrido se han utilizado bloques que son facilitados por V-REP, colocándolos en diferentes posiciones y diferentes ángulos para crear el circuito.
 
-![Circuito](/img/circuito.png)
+![Circuito](imgs/circuito.png)
 
 Buscamos un vehículo que encuentre la forma de conducir más óptima para recorrer un circuito. V-REP nos facilita modelos de más de un vehículo, tales como coches, tanques, aviones, etc. En nuestro caso hemos seleccionado el vehículo de cuatro ruedas Manta. Tal y como puede verse en la imagen 3, el vehículo cuenta con cuatro ruedas además de amortiguadores y una estructura; por lo demás, el vehículo no cuenta con ninguna funcionalidad extra a parte de las que nosotros añadamos.
 
-![Vehículo](/img/vehiculo.png)
+![Vehículo](imgs/vehiculo.png)
 
 ### Sensores
 
 Hay dos tipos de percepciones: aquellas que reflejan el estado del entorno (percepciones externas) y las que reflejan el estado del robot (percepciones internas); en nuestro caso del vehículo.
-Como percepciones externas, hemos puesto varios sensores de proximidad en la parte delantera del vehículo con diferentes direcciones; son cinco sensores, dos que apuntan uno a cada lado en ángulo recto, otro mirando al frente y los otros dos en un punto intermedio entre los anteriores (a 45 grados). Los sensores de proximidad que tenemos ofrecen dos tipos de información: por una parte, si hay alguna interferencia en su rango de alcance (en caso de que la haya), la distancia a la que se encuentra el objeto más próximo en esa dirección y, por otra parte, la normal del plano del objeto que el sensor percibe. El alcance de todos los sensores es el mismo: 8 metros.
 
-![Sensores](/img/sensores.png)
+Como percepciones externas, hemos puesto varios sensores de proximidad en la parte delantera del vehículo con diferentes direcciones; son cinco sensores, dos que apuntan uno a cada lado en ángulo recto, otro mirando al frente y los otros dos en un punto intermedio entre los anteriores (a 45 grados). Los sensores de proximidad que tenemos ofrecen dos tipos de información: por una parte, si hay alguna interferencia en su rango de alcance (en caso de que la haya), la distancia a la que se encuentra el objeto más próximo en esa dirección y, por otra parte, la normal del plano del objeto que el sensor percibe. El alcance de todos los sensores es el mismo: 8 metros.
+
+![Sensores](imgs/sensores.png)
 
 
-
+
